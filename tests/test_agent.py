@@ -11,7 +11,7 @@ from pydantic_ai.models.test import TestModel
 
 from app.agent import agent
 
-BASE_TOOLS = {"search_glossary", "get_lecture_summary"}
+BASE_TOOLS = {"search_glossary", "get_lecture_summary", "make_quiz"}
 
 
 def _parts(result, kind):
@@ -32,6 +32,16 @@ def test_base_tools_are_registered_and_called():
     waiting = len(result.output.approvals) if isinstance(result.output, DeferredToolRequests) else 0
     assert len(_parts(result, ToolReturnPart)) + waiting == len(_parts(result, ToolCallPart))
     assert result.output
+
+
+def test_make_quiz_docstring_is_exposed_to_the_model():
+    model = TestModel(call_tools=[])
+    with agent.override(model=model):
+        agent.run_sync("第2回の確認問題を出して")
+
+    tools_seen = {tool.name: tool for tool in model.last_model_request_parameters.function_tools}
+    description = tools_seen["make_quiz"].description
+    assert "確認問題や復習を求めたときに使う" in description
 
 
 def test_glossary_result_reaches_the_model():
