@@ -90,7 +90,7 @@ uv run python -m app.judge
 ```
 
 10 件 × 1 回ずつ LLM を呼びます（1 分ほど）。採点のプロンプトは `data/eval/rubric.md` にあり、全文読めます。`app/judge.py` は、基準ごとに理由を先に書かせてから T / F / unsure を出させる構造化出力で、temperature は 0 です。
-
+uv run python -m app.judge
 出力の読み方：
 
 - **基準別の一致率**：自分のラベルと LLM の判定が一致した件数。LLM が unsure にした項目は分母から外れます
